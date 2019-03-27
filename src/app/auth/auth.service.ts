@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs/Subject';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { MatSnackBar } from '@angular/material';
 
 import { User } from './user.model';
 import { AuthData } from './auth-data.model';
@@ -13,7 +14,11 @@ export class AuthService {
   authChange = new Subject<boolean>();
   private isAuthenticated = false;
 
-  constructor(private router: Router, private afAuth: AngularFireAuth, private trainingService: TrainingService) {}
+  constructor(
+      private router: Router, 
+      private afAuth: AngularFireAuth, 
+      private trainingService: TrainingService,
+      private snackbar: MatSnackBar) {}
 
   initAuthListener() {
     this.afAuth.authState.subscribe(user => {
@@ -38,7 +43,12 @@ export class AuthService {
        console.log(result);      
      })
      .catch(error => {
-       console.log(error);
+       let snackBarRef = this.snackbar.open(error.message, 'Dismiss', {
+         duration: 3000
+       });
+       snackBarRef.onAction().subscribe(() => {
+         console.log('Snack bar action button was clicked');
+       });
      });    
   }
 
@@ -48,7 +58,12 @@ export class AuthService {
     console.log(result);
    })
    .catch(error => {
-     console.log(error);
+    let snackBarRef = this.snackbar.open(error.message, 'Dismiss', {
+      duration: 3000
+    });
+    snackBarRef.onAction().subscribe(() => {
+      console.log('Snack bar action button was clicked');
+    });
    })    
   }
 
