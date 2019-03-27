@@ -16,8 +16,7 @@ export class AuthService {
   constructor(
       private router: Router, 
       private afAuth: AngularFireAuth, 
-      private trainingService: TrainingService,
-      private snackbar: MatSnackBar,
+      private trainingService: TrainingService,     
       private uiService: UIService) {}
 
   initAuthListener() {
@@ -62,12 +61,10 @@ export class AuthService {
    })
    .catch(error => {
     this.uiService.loadingStateChanged.next(false);
-      let snackBarRef = this.snackbar.open(error.message, 'Dismiss', {
-        duration: 3000
-      });
-      snackBarRef.onAction().subscribe(() => {
-        console.log('Snack bar action button was clicked');
-      });
+    let snackBarRef = this.uiService.showSnackbar(error.message, 'Dismiss', 3000);
+    snackBarRef.onAction().subscribe(() => {
+      console.log('Snack bar action button was clicked');
+    });      
    })    
   }
 
