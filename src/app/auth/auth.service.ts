@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs/Subject';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { MatSnackBar } from '@angular/material';
 
 import { User } from './user.model';
 import { AuthData } from './auth-data.model';
@@ -47,9 +46,7 @@ export class AuthService {
       })
       .catch(error => {
         this.uiService.loadingStateChanged.next(false);
-        let snackBarRef = this.snackbar.open(error.message, 'Dismiss', {
-          duration: 3000
-        });
+        let snackBarRef = this.uiService.showSnackbar(error.message, 'Dismiss', 3000);
         snackBarRef.onAction().subscribe(() => {
           console.log('Snack bar action button was clicked');
         });
