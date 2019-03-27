@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material';
 import { User } from './user.model';
 import { AuthData } from './auth-data.model';
 import { TrainingService } from './../training/training.service';
-
+import { UIService } from './../shared/ui.service';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +18,8 @@ export class AuthService {
       private router: Router, 
       private afAuth: AngularFireAuth, 
       private trainingService: TrainingService,
-      private snackbar: MatSnackBar) {}
+      private snackbar: MatSnackBar,
+      private uiService: UIService) {}
 
   initAuthListener() {
     this.afAuth.authState.subscribe(user => {
@@ -36,34 +37,40 @@ export class AuthService {
   }
 
   registerUser(authData: AuthData) {
-   this.afAuth.auth.createUserWithEmailAndPassword(
-     authData.email, 
-     authData.password)
-     .then(result => {
-       console.log(result);      
-     })
-     .catch(error => {
-       let snackBarRef = this.snackbar.open(error.message, 'Dismiss', {
-         duration: 3000
-       });
-       snackBarRef.onAction().subscribe(() => {
-         console.log('Snack bar action button was clicked');
-       });
-     });    
+    this.uiService.loadingStateChanged.next(true);
+    this.afAuth.auth.createUserWithEmailAndPassword(
+      authData.email, 
+      authData.password)
+      .then(result => {
+        this.uiService.loadingStateChanged.next(false);
+        console.log(result);      
+      })
+      .catch(error => {
+        this.uiService.loadingStateChanged.next(false);
+        let snackBarRef = this.snackbar.open(error.message, 'Dismiss', {
+          duration: 3000
+        });
+        snackBarRef.onAction().subscribe(() => {
+          console.log('Snack bar action button was clicked');
+        });
+      });    
   }
 
   login(authData: AuthData) {
-   this.afAuth.auth.signInWithEmailAndPassword(authData.email, authData.password)
-   .then(result => {    
-    console.log(result);
+      this.uiService.loadingStateChanged.next(true);
+      this.afAuth.auth.signInWithEmailAndPassword(authData.email, authData.password)
+   .then(result => {  
+      this.uiService.loadingStateChanged.next(false);
+      console.log(result);
    })
    .catch(error => {
-    let snackBarRef = this.snackbar.open(error.message, 'Dismiss', {
-      duration: 3000
-    });
-    snackBarRef.onAction().subscribe(() => {
-      console.log('Snack bar action button was clicked');
-    });
+    this.uiService.loadingStateChanged.next(false);
+      let snackBarRef = this.snackbar.open(error.message, 'Dismiss', {
+        duration: 3000
+      });
+      snackBarRef.onAction().subscribe(() => {
+        console.log('Snack bar action button was clicked');
+      });
    })    
   }
 
